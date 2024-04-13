@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Drawing</title>
+    <!-- Include Spectre CSS framework -->
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <!-- Include Font Awesome icons library -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <style>
+        /* Additional CSS styles */
+        canvas {
+            border: 1px solid #ccc;
+            cursor: crosshair;
+        }
+        .icon {
+            cursor: pointer;
+        }
+        #controls {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Canvas Drawing</h1>
+    
+    <div id="drawingArea">
+        <canvas id="main" width="800" height="500">Your browser does not support HTML canvas.</canvas>
+    </div>
+
+    <div id="controls">
+        <!-- Brush colors buttons -->
+        <div id="brushColors">
+            <button id="black" class="btn btn-primary icon">
+                <i class="fas fa-paint-brush" style="color: black;"></i>
+            </button>
+            <button id="blue" class="btn btn-primary icon">
+                <i class="fas fa-paint-brush" style="color: blue;"></i>
+            </button>
+            <button id="red" class="btn btn-primary icon">
+                <i class="fas fa-paint-brush" style="color: red;"></i>
+            </button>
+            <button id="yellow" class="btn btn-primary icon">
+                <i class="fas fa-paint-brush" style="color: yellow;"></i>
+            </button>
+        </div>
+
+        <!-- Eraser button -->
+        <button id="erase" class="btn btn-secondary icon">
+            <i class="fas fa-eraser"></i>
+        </button>
+
+        <!-- Clear button -->
+        <button id="clear" class="btn btn-error icon">Clear</button>
+
+        <!-- Brush size slider -->
+        <input id="slider" type="range" min="2" max="15" value="5" step="1" class="slider">
+    </div>
+
+    <!-- JavaScript code -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('main');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            let hue = 0;
+            let color = 'black';
+            let brushSize = 5;
+
+            function draw(e) {
+                if (!isDrawing) return;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = brushSize;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            });
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseout', () => isDrawing = false);
+
+            function changeColor(newColor) {
+                color = newColor;
+            }
+
+            function erase() {
+                color = 'white';
+            }
+
+            function clearCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Event listeners for color buttons
+            document.getElementById('black').addEventListener('click', () => changeColor('black'));
+            document.getElementById('blue').addEventListener('click', () => changeColor('blue'));
+            document.getElementById('red').addEventListener('click', () => changeColor('red'));
+            document.getElementById('yellow').addEventListener('click', () => changeColor('yellow'));
+
+            // Event listener for eraser button
+            document.getElementById('erase').addEventListener('click', erase);
+
+            // Event listener for clear button
+            document.getElementById('clear').addEventListener('click', clearCanvas);
+
+            // Event listener for slider
+            document.getElementById('slider').addEventListener('input', (e) => {
+                brushSize = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>
